@@ -1,7 +1,7 @@
-file(GLOB chipmunk_source_files "*.c")
-file(GLOB chipmunk_public_header "${chipmunk_SOURCE_DIR}/include/chipmunk/*.h")
+file(GLOB CHIPMUNK_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
+file(GLOB CHIPMUNK_INCLUDE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../include/chipmunk/*.h")
 
-include_directories(${chipmunk_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 # Chipmunk2D 7.0.3
 set(CHIPMUNK_VERSION_MAJOR 7)
@@ -11,13 +11,13 @@ set(CHIPMUNK_VERSION "${CHIPMUNK_VERSION_MAJOR}.${CHIPMUNK_VERSION_MINOR}.${CHIP
 message("Configuring Chipmunk2D version ${CHIPMUNK_VERSION}")
 
 
-if(BUILD_SHARED)
+if(CHIPMUNK_BUILD_SHARED)
   add_library(chipmunk SHARED
-    ${chipmunk_source_files}
+    ${CHIPMUNK_SOURCE_FILES}
   )
   # Tell MSVC to compile the code as C++.
   if(MSVC)
-    set_source_files_properties(${chipmunk_source_files} PROPERTIES LANGUAGE CXX)
+    set_source_files_properties(${CHIPMUNK_SOURCE_FILES} PROPERTIES LANGUAGE CXX)
     set_target_properties(chipmunk PROPERTIES LINKER_LANGUAGE CXX)
   endif(MSVC)
   # set the lib's version number
@@ -31,29 +31,28 @@ if(BUILD_SHARED)
 	  # need to explicitly link to the math library because the CMake/Android toolchains may not do it automatically
 	  target_link_libraries(chipmunk m)
   endif(ANDROID OR UNIX)
-  install(TARGETS chipmunk RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-                           LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-                           ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
-endif(BUILD_SHARED)
+  install(TARGETS chipmunk RUNTIME DESTINATION ${CHIPMUNK_BIN_INSTALL_DIR}
+                           LIBRARY DESTINATION ${CHIPMUNK_LIB_INSTALL_DIR}
+                           ARCHIVE DESTINATION ${CHIPMUNK_LIB_INSTALL_DIR})
+endif(CHIPMUNK_BUILD_SHARED)
 
-if(BUILD_STATIC)
-  add_library(chipmunk_static STATIC
-    ${chipmunk_source_files}
+if(CHIPMUNK_BUILD_STATIC)
+  add_library(chipmunk-static STATIC
+    ${CHIPMUNK_SOURCE_FILES}
   )
   # Tell MSVC to compile the code as C++.
   if(MSVC)
-    set_source_files_properties(${chipmunk_source_files} PROPERTIES LANGUAGE CXX)
-    set_target_properties(chipmunk_static PROPERTIES LINKER_LANGUAGE CXX)
+    set_source_files_properties(${CHIPMUNK_SOURCE_FILES} PROPERTIES LANGUAGE CXX)
+    set_target_properties(chipmunk-static PROPERTIES LINKER_LANGUAGE CXX)
   endif(MSVC)
-  # Sets chipmunk_static to output "libchipmunk.a" not "libchipmunk_static.a"
-  set_target_properties(chipmunk_static PROPERTIES OUTPUT_NAME chipmunk)
-  if(INSTALL_STATIC)
-    install(TARGETS chipmunk_static ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
-  endif(INSTALL_STATIC)
-endif(BUILD_STATIC)
+  # Sets chipmunk-static to output "libchipmunk.a" not "libchipmunk-static.a"
+  #set_target_properties(chipmunk-static PROPERTIES OUTPUT_NAME "chipmunk")
+  if(CHIPMUNK_INSTALL_STATIC)
+    install(TARGETS chipmunk-static ARCHIVE DESTINATION ${CHIPMUNK_LIB_INSTALL_DIR})
+  endif(CHIPMUNK_INSTALL_STATIC)
+endif(CHIPMUNK_BUILD_STATIC)
 
-if(BUILD_SHARED OR INSTALL_STATIC)
+if(CHIPMUNK_BUILD_SHARED OR CHIPMUNK_INSTALL_STATIC)
   # FIXME: change to PUBLIC_HEADER to allow building frameworks
-  install(FILES ${chipmunk_public_header} DESTINATION include/chipmunk)
-  install(FILES ${chipmunk_constraint_header} DESTINATION include/chipmunk/constraints)
-endif(BUILD_SHARED OR INSTALL_STATIC)
+  install(FILES ${CHIPMUNK_INCLUDE_FILES} DESTINATION include/chipmunk)
+endif(CHIPMUNK_BUILD_SHARED OR CHIPMUNK_INSTALL_STATIC)
