@@ -156,7 +156,8 @@ CP_EXPORT cpCollisionHandler *cpSpaceAddWildcardHandler(cpSpace *space, cpCollis
 
 /// Add a collision shape to the simulation.
 /// If the shape is attached to a static body, it will be added as a static shape.
-CP_EXPORT cpShape* cpSpaceAddShape(cpSpace *space, cpShape *shape);
+CP_EXPORT cpShape* cpSpaceAddShape(cpSpace* space, cpShape* shape);
+CP_EXPORT cpShape* cpSpaceAddShapeCustom(cpSpace* space, cpShape* shape);
 /// Add a rigid body to the simulation.
 CP_EXPORT cpBody* cpSpaceAddBody(cpSpace *space, cpBody *body);
 /// Add a constraint to the simulation.

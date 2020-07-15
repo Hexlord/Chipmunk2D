@@ -437,6 +437,27 @@ cpSpaceAddShape(cpSpace *space, cpShape *shape)
 	return shape;
 }
 
+cpShape* 
+cpSpaceAddShapeCustom(cpSpace* space, cpShape* shape)
+{
+	cpAssertHard(shape->space != space, "You have already added this shape to this space. You must not add it a second time.");
+	cpAssertHard(!shape->space, "You have already added this shape to another space. You cannot add it to a second.");
+	cpAssertHard(shape->body, "The shape's body is not defined.");
+	cpAssertSpaceUnlocked(space);
+
+	cpBody* body = shape->body;
+
+	cpBodyAddShapeCustom(body, shape);
+
+	shape->hashid = space->shapeIDCounter++;
+	cpShapeUpdate(shape, body->transform);
+	const cpBool isStatic = (cpBodyGetType(body) == CP_BODY_TYPE_STATIC);
+	cpSpatialIndexInsert(isStatic ? space->staticShapes : space->dynamicShapes, shape, shape->hashid);
+	shape->space = space;
+
+	return shape;
+}
+
 cpBody *
 cpSpaceAddBody(cpSpace *space, cpBody *body)
 {

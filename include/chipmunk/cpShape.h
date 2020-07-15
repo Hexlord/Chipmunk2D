@@ -77,7 +77,9 @@ cpShapeFilterNew(cpGroup group, cpBitmask categories, cpBitmask mask)
 /// Destroy a shape.
 CP_EXPORT void cpShapeDestroy(cpShape *shape);
 /// Destroy and Free a shape.
-CP_EXPORT void cpShapeFree(cpShape *shape);
+CP_EXPORT void cpShapeFree(cpShape* shape);
+/// Destroy and Free a shape.
+CP_EXPORT void cpShapeFreeCustom(cpShape* shape);
 
 /// Update, cache and return the bounding box of a shape based on the body it's attached to.
 CP_EXPORT cpBB cpShapeCacheBB(cpShape *shape);
@@ -131,7 +133,7 @@ CP_EXPORT void cpShapeSetSensor(cpShape *shape, cpBool sensor);
 /// Get the elasticity of this shape.
 CP_EXPORT cpFloat cpShapeGetElasticity(const cpShape *shape);
 /// Set the elasticity of this shape.
-CP_EXPORT void cpShapeSetElasticity(cpShape *shape, cpFloat elasticity);
+CP_EXPORT void cpShapeSetElasticity(cpShape* shape, cpFloat elasticity);
 
 /// Get the friction of this shape.
 CP_EXPORT cpFloat cpShapeGetFriction(const cpShape *shape);

@@ -48,9 +48,13 @@ typedef void (*cpBodyPositionFunc)(cpBody *body, cpFloat dt);
 /// Allocate a cpBody.
 CP_EXPORT cpBody* cpBodyAlloc(void);
 /// Initialize a cpBody.
-CP_EXPORT cpBody* cpBodyInit(cpBody *body, cpFloat mass, cpFloat moment);
+CP_EXPORT cpBody* cpBodyInit(cpBody* body, cpFloat mass, cpFloat moment);
+/// Initialize a cpBody.
+CP_EXPORT cpBody* cpBodyInitCustom(cpBody* body, cpVect cog, cpFloat mass, cpFloat moment, cpVect position, cpVect velocity, cpFloat angle, cpFloat angularVelocity);
 /// Allocate and initialize a cpBody.
 CP_EXPORT cpBody* cpBodyNew(cpFloat mass, cpFloat moment);
+
+CP_EXPORT void cpBodyComputeMassFromShapesCustom(cpBody* body, cpFloat& outMass, cpFloat& outMoment, cpVect& outCog);
 
 /// Allocate and initialize a cpBody, and set it as a kinematic body.
 CP_EXPORT cpBody* cpBodyNewKinematic(void);
@@ -60,7 +64,9 @@ CP_EXPORT cpBody* cpBodyNewStatic(void);
 /// Destroy a cpBody.
 CP_EXPORT void cpBodyDestroy(cpBody *body);
 /// Destroy and free a cpBody.
-CP_EXPORT void cpBodyFree(cpBody *body);
+CP_EXPORT void cpBodyFree(cpBody* body);
+/// Destroy and free a cpBody.
+CP_EXPORT void cpBodyFreeCustom(cpBody* body);
 
 // Defined in cpSpace.c
 /// Wake up a sleeping or idle body.

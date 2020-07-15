@@ -210,6 +210,27 @@ cpPolyShapeInitRaw(cpPolyShape *poly, cpBody *body, int count, const cpVect *ver
 	return poly;
 }
 
+cpPolyShape *
+cpPolyShapeInitRawCustom(cpPolyShape *poly, cpBody *body, int count, const cpVect *verts, cpFloat density, cpFloat radius)
+{
+
+	cpVect centroid = cpCentroidForPoly(count, verts);
+	cpFloat area = cpAreaForPoly(count, verts, radius);
+	struct cpShapeMassInfo info = {
+		area * density,
+		cpMomentForPoly(1.0f, count, verts, cpvneg(centroid), radius),
+		centroid,
+		area,
+	};
+	
+	cpShapeInit(reinterpret_cast<cpShape*>(poly), &polyClass, body, info);
+	
+	SetVerts(poly, count, verts);
+	poly->r = radius;
+
+	return poly;
+}
+
 cpShape *
 cpPolyShapeNew(cpBody *body, int count, const cpVect *verts, cpTransform transform, cpFloat radius)
 {
@@ -220,6 +241,15 @@ cpShape *
 cpPolyShapeNewRaw(cpBody *body, int count, const cpVect *verts, cpFloat radius)
 {
 	return (cpShape *)cpPolyShapeInitRaw(cpPolyShapeAlloc(), body, count, verts, radius);
+}
+
+cpShape* 
+cpPolyShapeNewRawCustom(cpBody* body, int count, const cpVect* verts, cpFloat density, cpFloat radius, cpFloat friction, cpFloat elasticity)
+{
+	cpShape* result = reinterpret_cast<cpShape*>(cpPolyShapeInitRawCustom(cpPolyShapeAlloc(), body, count, verts, density, radius));
+	result->e = elasticity;
+	result->u = friction;
+	return result;
 }
 
 cpPolyShape *

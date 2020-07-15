@@ -70,7 +70,8 @@ void cpHashSetFilter(cpHashSet *set, cpHashSetFilterFunc func, void *data);
 
 //MARK: Bodies
 
-void cpBodyAddShape(cpBody *body, cpShape *shape);
+void cpBodyAddShape(cpBody* body, cpShape* shape);
+void cpBodyAddShapeCustom(cpBody* body, cpShape* shape);
 void cpBodyRemoveShape(cpBody *body, cpShape *shape);
 
 //void cpBodyAccumulateMassForShape(cpBody *body, cpShape *shape);

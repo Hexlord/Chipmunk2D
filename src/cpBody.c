@@ -20,6 +20,7 @@
  */
 
 #include <float.h>
+#include <limits>
 #include <stdarg.h>
 
 #include "chipmunk/chipmunk_private.h"
@@ -65,6 +66,55 @@ cpBodyInit(cpBody *body, cpFloat mass, cpFloat moment)
 	return body;
 }
 
+cpBody* 
+cpBodyInitCustom(cpBody* body, cpVect cog, cpFloat mass, cpFloat moment, cpVect position, cpVect velocity, cpFloat angle, cpFloat angularVelocity)
+{
+	body->space = NULL;
+	body->shapeList = NULL;
+	body->arbiterList = NULL;
+	body->constraintList = NULL;
+
+	body->velocity_func = cpBodyUpdateVelocity;
+	body->position_func = cpBodyUpdatePosition;
+
+	body->sleeping.root = NULL;
+	body->sleeping.next = NULL;
+	body->sleeping.idleTime = 0.0;
+
+	body->p = position;
+	body->v = velocity;
+	body->f = cpvzero;
+
+	body->a = angle;
+	body->w = angularVelocity;
+	body->t = 0.0;
+
+	body->cog = cog;
+
+	body->v_bias = cpvzero;
+	body->w_bias = 0.0;
+
+	body->userData = NULL;
+
+	body->m = mass;
+	body->m_inv = mass == 0.0f
+	? std::numeric_limits<cpFloat>::infinity()
+	: 1.0f / mass;
+	
+	body->i = moment;
+	body->i_inv = moment == 0.0f
+	? std::numeric_limits<cpFloat>::infinity()
+	: 1.0f / moment;
+
+	cpVect rot = cpvforangle(angle);
+	body->transform = cpTransformNewTranspose(
+		rot.x, -rot.y, position.x - (cog.x * rot.x - cog.y * rot.y),
+		rot.y, rot.x, position.y - (cog.x * rot.y + cog.y * rot.x)
+	);
+
+	return body;
+}
+
 cpBody*
 cpBodyNew(cpFloat mass, cpFloat moment)
 {
@@ -98,6 +148,12 @@ cpBodyFree(cpBody *body)
 		cpBodyDestroy(body);
 		cpfree(body);
 	}
+}
+
+void
+cpBodyFreeCustom(cpBody* body)
+{
+	cpfree(body);
 }
 
 #ifdef NDEBUG
@@ -238,6 +294,30 @@ cpBodyAccumulateMassFromShapes(cpBody *body)
 	cpAssertSaneBody(body);
 }
 
+
+void
+cpBodyComputeMassFromShapesCustom(cpBody* body, cpFloat& outMass, cpFloat& outMoment, cpVect& outCog)
+{
+	outMass = 0.0;
+	outMoment = 0.0;
+	outCog = cpvzero;
+
+	CP_BODY_FOREACH_SHAPE(body, shape)
+	{
+		struct cpShapeMassInfo* info = &shape->massInfo;
+		const cpFloat m = info->m;
+
+		if (m > 0.0) 
+		{
+			const cpFloat msum = outMass + m;
+
+			outMoment += m * info->i + cpvdistsq(outCog, info->cog) * (m * outMass) / msum;
+			outCog = cpvlerp(outCog, info->cog, m / msum);
+			outMass = msum;
+		}
+	}
+}
+
 cpSpace *
 cpBodyGetSpace(const cpBody *body)
 {
@@ -297,6 +377,16 @@ cpBodyAddShape(cpBody *body, cpShape *shape)
 	if(shape->massInfo.m > 0.0f){
 		cpBodyAccumulateMassFromShapes(body);
 	}
+}
+
+void
+cpBodyAddShapeCustom(cpBody* body, cpShape* shape)
+{
+	cpShape* next = body->shapeList;
+	if (next) next->prev = shape;
+
+	shape->next = next;
+	body->shapeList = shape;
 }
 
 void
@@ -368,7 +458,8 @@ SetAngle(cpBody *body, cpFloat a)
 cpVect
 cpBodyGetPosition(const cpBody *body)
 {
-	return cpTransformPoint(body->transform, cpvzero);
+	const cpTransform& t = body->transform;
+	return cpv(t.tx, t.ty);
 }
 
 void

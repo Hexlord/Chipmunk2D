@@ -72,6 +72,12 @@ cpShapeFree(cpShape *shape)
 	}
 }
 
+void
+cpShapeFreeCustom(cpShape* shape)
+{
+	cpfree(shape);
+}
+
 cpSpace *
 cpShapeGetSpace(const cpShape *shape)
 {

@@ -30,12 +30,16 @@ CP_EXPORT cpPolyShape* cpPolyShapeInit(cpPolyShape *poly, cpBody *body, int coun
 /// Initialize a polygon shape with rounded corners.
 /// The vertexes must be convex with a counter-clockwise winding.
 CP_EXPORT cpPolyShape* cpPolyShapeInitRaw(cpPolyShape *poly, cpBody *body, int count, const cpVect *verts, cpFloat radius);
+CP_EXPORT cpPolyShape* cpPolyShapeInitRawCustom(cpPolyShape *poly, cpBody *body, int count, const cpVect *verts, cpFloat density, cpFloat radius);
 /// Allocate and initialize a polygon shape with rounded corners.
 /// A convex hull will be created from the vertexes.
 CP_EXPORT cpShape* cpPolyShapeNew(cpBody *body, int count, const cpVect *verts, cpTransform transform, cpFloat radius);
 /// Allocate and initialize a polygon shape with rounded corners.
 /// The vertexes must be convex with a counter-clockwise winding.
-CP_EXPORT cpShape* cpPolyShapeNewRaw(cpBody *body, int count, const cpVect *verts, cpFloat radius);
+CP_EXPORT cpShape* cpPolyShapeNewRaw(cpBody* body, int count, const cpVect* verts, cpFloat radius);
+/// Allocate and initialize a polygon shape with rounded corners.
+/// The vertexes must be convex with a counter-clockwise winding.
+CP_EXPORT cpShape* cpPolyShapeNewRawCustom(cpBody* body, int count, const cpVect* verts, cpFloat density, cpFloat radius, cpFloat friction, cpFloat elasticity);
 
 /// Initialize a box shaped polygon shape with rounded corners.
 CP_EXPORT cpPolyShape* cpBoxShapeInit(cpPolyShape *poly, cpBody *body, cpFloat width, cpFloat height, cpFloat radius);
